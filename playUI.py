@@ -35,7 +35,7 @@ INFO_HEIGHT = 70  # Height of info area
 class GomokuUI:
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Gomoku - Human vs AI")
+        pygame.display.set_caption("Human vs AI")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont('Arial', 20)
         self.title_font = pygame.font.SysFont('Arial', 30)
@@ -68,7 +68,7 @@ class GomokuUI:
 
     def start_menu(self):
 
-        title = self.title_font.render("Gomoku - Human vs AI", True, BLACK)
+        title = self.title_font.render("Human vs AI", True, BLACK)
         title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
 
         #按钮设置
