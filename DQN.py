@@ -91,7 +91,7 @@ class DQN(nn.Module):
         return qvals
 
     def act(self, state, available_actions, training=True):
-        """改进的探索策略"""
+        #改进策略
         state = self._preprocess_state(state)
 
         # 动态epsilon
@@ -120,7 +120,7 @@ class DQN(nn.Module):
             return np.argmax(mask)
 
     def train_step(self, batch, weights=None):
-        """优先级经验回放训练"""
+        #经验放回
         states, actions, rewards, next_states, dones = zip(*batch)
 
         states = torch.FloatTensor(np.array(states)).to(self.device)
@@ -166,7 +166,7 @@ class DQN(nn.Module):
         return losses.item(), errors
 
     def _preprocess_state(self, state):
-        """统一状态预处理"""
+        #状态处理
         if isinstance(state, np.ndarray):
             if state.ndim == 2:
                 state = np.stack([state] * 4)
@@ -175,7 +175,6 @@ class DQN(nn.Module):
         return state
 
     def save_model(self, filename):
-        """保存模型"""
         torch.save({
             'state_dict': self.state_dict(),
             'target_state_dict': self.target_net.state_dict(),
@@ -183,7 +182,6 @@ class DQN(nn.Module):
         }, filename)
 
     def load_model(self, filename):
-        """加载模型"""
         if os.path.exists(filename):
             checkpoint = torch.load(filename)
             self.load_state_dict(checkpoint['state_dict'])
