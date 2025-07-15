@@ -84,7 +84,7 @@ class DQNTrainer:
         }
 
     def get_state_representation(self, board_state):
-        """获取4通道状态表示"""
+       #状态表示
         square_state = np.zeros((4, self.board_width, self.board_height), dtype=np.float32)
 
         if board_state:
@@ -102,7 +102,7 @@ class DQNTrainer:
         return square_state
 
     def _create_plane(self, moves, width, height):
-        """创建单个通道的平面"""
+        #创建通道界面"
         plane = np.zeros((width, height), dtype=np.float32)
         for move in moves:
             row, col = divmod(move, width)
@@ -110,7 +110,7 @@ class DQNTrainer:
         return plane
 
     def _check_patterns(self, player):
-        """检查棋型模式"""
+      #检查棋盘
         patterns = {
             'open_three': 0,
             'half_four': 0,
@@ -146,7 +146,7 @@ class DQNTrainer:
         return patterns
 
     def collect_selfplay_data(self):
-        """收集自我对弈数据"""
+        #收集数据
         self.board.init_board()
         episode_data = []
         step_count = 0
@@ -205,7 +205,7 @@ class DQNTrainer:
         return step_count
 
     def train_batch(self):
-        """训练一个批次"""
+        #训练模型批次
         if len(self.data_buffer) < self.batch_size:
             return None
 
@@ -226,7 +226,7 @@ class DQNTrainer:
         return loss
 
     def evaluate_model(self, n_games=10):
-        """评估当前模型对随机策略的胜率"""
+        #评估模型
         win_cnt = 0
         for _ in range(n_games):
             self.board.init_board()
@@ -248,7 +248,7 @@ class DQNTrainer:
         return win_cnt / n_games
 
     def run(self):
-        """主训练循环"""
+       #主训练
         for episode in range(1, self.episodes + 1):
             steps = self.collect_selfplay_data()
             loss = self.train_batch()
