@@ -7,22 +7,22 @@ from MCTS import MCTSPlayer
 from Policy_net import PolicyValueNet
 from DQN import DQN
 import numpy as np
-# Initialize pygame
+# 初始化Pygame
 pygame.init()
 
-# Color definitions
+#颜色定义
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-BOARD_COLOR = (220, 179, 92)  # Board color
-LINE_COLOR = (0, 0, 0)  # Line color
-HIGHLIGHT_COLOR = (255, 0, 0)  # Highlight color
-TEXT_COLOR = (19, 25, 99)  # Text color
-BUTTON_COLOR = (100, 100, 100)  # Button color
-BUTTON_HOVER_COLOR = (150, 150, 150)  # Button hover color
-MCTS_BUTTON_COLOR = (100, 200, 100)  # MCTS selected color
-DQN_BUTTON_COLOR = (100, 100, 200)  # DQN selected color
+BOARD_COLOR = (220, 179, 92) 
+LINE_COLOR = (0, 0, 0)  # 线条颜色
+HIGHLIGHT_COLOR = (255, 0, 0)  
+TEXT_COLOR = (19, 25, 99)  # 文本颜色
+BUTTON_COLOR = (100, 100, 100)  
+BUTTON_HOVER_COLOR = (150, 150, 150)  
+MCTS_BUTTON_COLOR = (100, 200, 100)  #MCT按钮颜色
+DQN_BUTTON_COLOR = (100, 100, 200)  # DQN按钮颜色
 
-# Board settings
+# 棋盘设置
 BOARD_SIZE = 6
 GRID_SIZE = 50  # Pixel size of each grid cell
 PIECE_RADIUS = 20  # Radius of game pieces
@@ -41,7 +41,7 @@ class GomokuUI:
         self.title_font = pygame.font.SysFont('Arial', 30)
         self.small_font = pygame.font.SysFont('Arial', 16)
 
-        # Game state variables
+        # 游戏状态初始化
         self.board = None
         self.game = None
         self.ai_player = None
@@ -49,19 +49,19 @@ class GomokuUI:
         self.game_over = False
         self.winner = None
         self.in_menu = True
-        self.ai_type = "MCTS"  # Can be "MCTS" or "DQN"
+        self.ai_type = "MCTS"  #选择
 
         # Load AI models
         self.load_models()
 
     def load_models(self):
-        # MCTS Policy Network
+        # MCTS 网络
         if os.path.exists('best_policy.model'):
            self.best_policy = PolicyValueNet(BOARD_SIZE, BOARD_SIZE, model_file='best_policy.model')
         else:
            raise FileNotFoundError("MCTS model file not found")
 
-        # DQN Model
+        # DQN模型
         self.dqn_model = DQN(board_size=BOARD_SIZE)
         if os.path.exists('dqn_best.pth'):
             self.dqn_model.load_model('dqn_best.pth')
@@ -71,7 +71,7 @@ class GomokuUI:
         title = self.title_font.render("Gomoku - Human vs AI", True, BLACK)
         title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
 
-        # Button definitions
+        #按钮设置
         human_btn = pygame.Rect(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WINDOW_WIDTH // 2, 40)
         ai_btn = pygame.Rect(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2 + 50, WINDOW_WIDTH // 2, 40)
         mcts_btn = pygame.Rect(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2 + 110, WINDOW_WIDTH // 4, 30)
@@ -80,15 +80,15 @@ class GomokuUI:
         while self.in_menu:
             mouse_pos = pygame.mouse.get_pos()
 
-            # Draw menu background
+            # 绘制菜单
             self.screen.fill(BOARD_COLOR)
             self.screen.blit(title, title_rect)
 
-            # Draw AI type selection text
+            
             ai_select_text = self.font.render("Select AI Type:", True, BLACK)
             self.screen.blit(ai_select_text, (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2 + 90))
 
-            # Draw buttons
+           
             pygame.draw.rect(self.screen,
                              BUTTON_HOVER_COLOR if human_btn.collidepoint(mouse_pos) else BUTTON_COLOR,
                              human_btn)
@@ -102,7 +102,7 @@ class GomokuUI:
                              DQN_BUTTON_COLOR if self.ai_type == "DQN" else BUTTON_COLOR,
                              dqn_btn)
 
-            # Draw button texts
+           
             human_text = self.font.render("Human First (Black)", True, WHITE)
             ai_text = self.font.render("AI First (White)", True, WHITE)
             mcts_text = self.font.render("MCTS", True, WHITE)
@@ -117,7 +117,7 @@ class GomokuUI:
             self.screen.blit(dqn_text, (dqn_btn.centerx - dqn_text.get_width() // 2,
                                         dqn_btn.centery - dqn_text.get_height() // 2))
 
-            # Event handling
+            # 交互事件处理
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -137,7 +137,7 @@ class GomokuUI:
             self.clock.tick(30)
 
     def start_game(self, human_first=True):
-        """Initialize a new game"""
+       #初始化游戏
         self.in_menu = False
         self.board = Board(width=BOARD_SIZE, height=BOARD_SIZE, n_in_row=4)
         self.game = Game(self.board)
@@ -152,7 +152,7 @@ class GomokuUI:
         else:  # DQN
             self.ai_player = self.create_dqn_player()
 
-        # Set player order
+        # 判断先行者
         if human_first:
             self.human_player = 1
             if self.ai_type == "MCTS":
@@ -166,7 +166,7 @@ class GomokuUI:
             self.ai_move()
 
     def create_dqn_player(self):
-        """Create a DQN player function"""
+        #创建DQN模型
 
         def policy_fn(board):
             # 应该使用4通道状态表示，与MCTS一致
@@ -194,22 +194,21 @@ class GomokuUI:
         return policy_fn
 
     def draw_board(self):
-        """Draw the game board and pieces"""
-        # Draw board background
+        
         self.screen.fill(BOARD_COLOR)
 
-        # Draw grid lines
+        
         for i in range(BOARD_SIZE):
-            # Horizontal lines
+            # 水平线
             pygame.draw.line(self.screen, LINE_COLOR,
                              (MARGIN, MARGIN + i * GRID_SIZE),
                              (WINDOW_WIDTH - MARGIN, MARGIN + i * GRID_SIZE), 2)
-            # Vertical lines
+            # 垂直线
             pygame.draw.line(self.screen, LINE_COLOR,
                              (MARGIN + i * GRID_SIZE, MARGIN),
                              (MARGIN + i * GRID_SIZE, WINDOW_HEIGHT - INFO_HEIGHT - MARGIN), 2)
 
-        # Draw pieces
+        # 绘制
         for move, player in self.board.states.items():
             row = move // BOARD_SIZE
             col = move % BOARD_SIZE
@@ -218,14 +217,14 @@ class GomokuUI:
 
             if player == 1:  # Black piece
                 pygame.draw.circle(self.screen, BLACK, (x, y), PIECE_RADIUS)
-            else:  # White piece
+            else: #白子
                 pygame.draw.circle(self.screen, WHITE, (x, y), PIECE_RADIUS)
                 pygame.draw.circle(self.screen, BLACK, (x, y), PIECE_RADIUS, 1)  # Border
 
-        # Draw info area
+       
         pygame.draw.rect(self.screen, WHITE, (0, WINDOW_HEIGHT - INFO_HEIGHT, WINDOW_WIDTH, INFO_HEIGHT))
 
-        # Game status text
+        
         if self.game_over:
             if self.winner == self.human_player:
                 text = "You win! Click to return to menu."
@@ -245,21 +244,21 @@ class GomokuUI:
         text_surface = self.font.render(text, True, TEXT_COLOR)
         self.screen.blit(text_surface, (20, WINDOW_HEIGHT - INFO_HEIGHT + 20))
 
-        # Draw current AI type
+       
         ai_text = self.small_font.render(f"AI: {self.ai_type}", True, TEXT_COLOR)
         self.screen.blit(ai_text, (20, WINDOW_HEIGHT - INFO_HEIGHT + 50))
 
     def handle_click(self, pos):
-        """Handle mouse clicks on the board"""
+        
         if self.game_over:
             self.in_menu = True
             self.start_menu()
             return
 
         if self.board.current_player != self.human_player:
-            return  # Not human's turn
+            return  
 
-        # Convert click position to board coordinates
+       
         col = min(max(0, round((pos[0] - MARGIN) / GRID_SIZE)), BOARD_SIZE - 1)
         row = min(max(0, round((pos[1] - MARGIN) / GRID_SIZE)), BOARD_SIZE - 1)
         move = row * BOARD_SIZE + col
@@ -269,7 +268,7 @@ class GomokuUI:
             self.draw_board()
             pygame.display.flip()
 
-            # Check if game ended
+            
             end, winner = self.board.game_end()
             if end:
                 self.game_over = True
@@ -278,16 +277,16 @@ class GomokuUI:
                 self.ai_move()
 
     def ai_move(self):
-        """Make AI move"""
+        #AI移动
         if not self.game_over and (
                 (self.ai_type == "MCTS" and self.board.current_player == self.ai_player.player) or
                 (self.ai_type == "DQN" and self.board.current_player != self.human_player)
         ):
-            # Show thinking message
+           
             self.draw_board()
             pygame.display.flip()
 
-            # Get AI move
+            
             if self.ai_type == "MCTS":
                 move = self.ai_player.get_action(self.board)
             else:  # DQN
@@ -295,14 +294,14 @@ class GomokuUI:
 
             self.board.do_move(move)
 
-            # Check if game ended
+            
             end, winner = self.board.game_end()
             if end:
                 self.game_over = True
                 self.winner = winner
 
     def run(self):
-        """Main game loop"""
+        
         self.start_menu()
 
         while True:
@@ -312,21 +311,21 @@ class GomokuUI:
                         pygame.quit()
                         sys.exit()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:  # Left click
+                        if event.button == 1:  
                             self.handle_click(event.pos)
 
                 self.draw_board()
                 pygame.display.flip()
                 self.clock.tick(30)
 
-                # AI move if it's AI's turn
+                
                 if not self.game_over and not self.in_menu:
                     if self.ai_type == "MCTS" and self.board.current_player == self.ai_player.player:
                         self.ai_move()
                     elif self.ai_type == "DQN" and self.board.current_player != self.human_player:
                         self.ai_move()
             else:
-                pass  # In menu, handled by start_menu()
+                pass  # 菜单处理
 
 
 if __name__ == "__main__":
